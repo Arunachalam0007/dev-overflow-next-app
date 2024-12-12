@@ -9,3 +9,13 @@ npm install eslint-config-prettier
 npm install prettier
 
 sudo npm install eslint-plugin-import --save-dev // ordering the import
+
+# Packages Installed
+
+Theme provider : npm i next-themes (Toggle dark, light, system)
+
+# Shadcn/UI Packages
+
+npx shadcn@latest init
+
+sudo npx shadcn@latest add dropdown-menu

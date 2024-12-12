@@ -13,7 +13,7 @@
     "prettier.trailingComma": "es5",
     "prettier.arrowParens": "always",
     "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -27,5 +27,10 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "[javascript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "files.exclude": {
+        "**/.next": true,
+        "**/node_modules": true,
+        "next-env.d.ts": true,
     }
 }
