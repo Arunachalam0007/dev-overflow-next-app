@@ -1,14 +1,14 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode } from "react";
 
-import NavBar from '@/components/navigation/navbar'
+import NavBar from "@/components/navigation/navbar";
 
-function RootLayout({children}:{children: ReactNode}) {
+function RootLayout({ children }: { children: ReactNode }) {
   return (
-      <div>
-        <NavBar />
+    <div>
+      <NavBar />
       {children}
     </div>
-  )
+  );
 }
 
-export default RootLayout
+export default RootLayout;
