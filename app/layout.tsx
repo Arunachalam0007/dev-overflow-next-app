@@ -1,13 +1,16 @@
 /* eslint-disable camelcase */
 import type { Metadata } from "next";
-import {Space_Grotesk, Inter, } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import React from "react";
 
 import "./globals.css";
-import NavBar from "@/components/navigation/navbar";
+import { auth } from "@/auth";
+import { Toaster } from "@/components/ui/toaster";
 
 import ThemeProvider from "./context/ThemeProvider";
 
+// eslint-disable-next-line import/order
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -19,7 +22,6 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
-
 export const metadata: Metadata = {
   title: "Dev Overflow",
   description:
@@ -29,23 +31,29 @@ export const metadata: Metadata = {
   },
 };
 
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode; 
+  children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NavBar />
-          {children}
-        </ThemeProvider>
-     
-      </body>
+      <SessionProvider session={session}>
+        <body
+          className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+          <Toaster />
+        </body>
+      </SessionProvider>
     </html>
   );
 }

@@ -19,3 +19,10 @@ Theme provider : npm i next-themes (Toggle dark, light, system)
 npx shadcn@latest init
 
 sudo npx shadcn@latest add dropdown-menu
+
+sudo npx shadcn@latest add toast
+
+# Auth.js For Authentication (https://authjs.dev/getting-started)
+
+npm install next-auth@beta
+npx auth secret
