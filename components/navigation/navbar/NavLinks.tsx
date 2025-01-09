@@ -1,4 +1,5 @@
 "use client";
+import { Dialog } from "@radix-ui/react-dialog";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,7 +25,7 @@ function NavLinks({ isMobileNav = false }: { isMobileNav: boolean }) {
           pathname === sidebarLink.route;
 
         // Dynamic Profile Link
-        if (sidebarLink.route === "/profile") {
+        if (sidebarLink.route === "/profile" || sidebarLink.route === "/tags") {
           if (userId) sidebarLink.route = sidebarLink.route + `/${userId}`;
         }
         console.log("isActive: ", isActive);
@@ -50,7 +51,7 @@ function NavLinks({ isMobileNav = false }: { isMobileNav: boolean }) {
             <p
               className={cn(
                 isActive ? "base-bold" : "base-medium",
-                !isMobileNav && "max-lg: hidden"
+                !isMobileNav && "" // "max-lg: hidden"
               )}
             >
               {sidebarLink.label}
@@ -59,9 +60,11 @@ function NavLinks({ isMobileNav = false }: { isMobileNav: boolean }) {
         );
 
         return (
-          <SheetClose key={sidebarLink.label} asChild>
-            {LinkComponent}
-          </SheetClose>
+          <Dialog key={sidebarLink.label}>
+            <SheetClose key={sidebarLink.label} asChild>
+              {LinkComponent}
+            </SheetClose>
+          </Dialog>
         );
       })}
     </>
