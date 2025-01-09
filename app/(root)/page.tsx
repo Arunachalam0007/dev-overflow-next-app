@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
+import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
@@ -25,7 +26,7 @@ const questions = [
     title: "How to learn JavaScript?",
     description: "I want to learn JavaScript, can anyone help me?",
     tags: [
-      { _id: "1", name: "React" },
+      { _id: "1", name: "JavaScript" },
       { _id: "2", name: "JavaScript" },
     ],
     author: { _id: "1", name: "John Doe" },
@@ -44,11 +45,27 @@ interface SearchParamsURLProps {
 
 async function Home({ searchParams }: SearchParamsURLProps) {
   console.log("searchParamsURL: ", searchParams);
-  const { query = "" } = await searchParams;
+  const { query = "", filter = "" } = await searchParams;
 
-  const filterdQuestions = questions.filter((question) =>
-    question.title.toLowerCase().includes(query.toLowerCase())
-  );
+  // const filterdQuestions = questions.filter((question) =>
+  //   question.title.toLowerCase().includes(query.toLowerCase())
+  // );
+
+  const filterdQuestions = questions.filter((question) => {
+    const matchesQuery = question.title
+      .toLowerCase()
+      .includes(query.toLowerCase());
+    const matchesFilter = filter
+      ? question.tags[0].name.toLowerCase() === filter.toLowerCase()
+      : true;
+
+    console.log(
+      "matchesQuery && matchesFilter: ",
+      matchesQuery && matchesFilter
+    );
+
+    return matchesQuery && matchesFilter;
+  });
 
   return (
     <>
@@ -73,7 +90,9 @@ async function Home({ searchParams }: SearchParamsURLProps) {
           otherClasses=""
         />
       </section>
-      <section className="mt-11">Home Filter </section>
+      <section className="mt-11">
+        <HomeFilter />{" "}
+      </section>
       <section className="mt-10 flex w-full flex-col gap-6">
         {filterdQuestions.map((question) => (
           <h1 key={question._id}>{question.title}</h1>
