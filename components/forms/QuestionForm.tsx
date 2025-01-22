@@ -5,6 +5,9 @@ import { MDXEditorMethods } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import TagCard from "../cards/TagCard";
+
 import {
   Form,
   FormControl,
@@ -12,6 +15,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -23,17 +27,59 @@ const Editor = dynamic(() => import("@/components/editor"), {
 const QuestionForm = () => {
   const editorRef = useRef<MDXEditorMethods>(null);
 
-  const formOfReackHook = useForm({
+  const formOfReackHook = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: { title: "", content: "", tags: [] },
   });
 
-  const handleCreateQuestion = () => {};
+  const handleInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: { value: string[] }
+  ) => {
+    console.log(field, e);
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const tagInput = e.currentTarget.value.trim();
+
+      if (tagInput && tagInput.length < 15 && !field.value.includes(tagInput)) {
+        formOfReackHook.setValue("tags", [...field.value, tagInput]);
+        e.currentTarget.value = "";
+        formOfReackHook.clearErrors("tags");
+      } else if (tagInput.length > 15) {
+        formOfReackHook.setError("tags", {
+          type: "manual",
+          message: "Tag should be less than 15 characters",
+        });
+      } else if (field.value.includes(tagInput)) {
+        formOfReackHook.setError("tags", {
+          type: "manual",
+          message: "Tag already exists",
+        });
+      }
+    }
+  };
+
+  const handleTagRemove = (tag: string, field: { value: string[] }) => {
+    const newTags = field.value.filter((t) => t !== tag);
+
+    formOfReackHook.setValue("tags", newTags);
+
+    if (newTags.length === 0) {
+      formOfReackHook.setError("tags", {
+        type: "manual",
+        message: "Tags are required",
+      });
+    }
+  };
+
+  const handleCreateQuestion = (data: z.infer<typeof AskQuestionSchema>) => {
+    console.log(data);
+  };
 
   return (
     <Form {...formOfReackHook}>
       <form
-        className="felx flex-col w-full gap-10"
+        className="felx flex-col w-full gap-20"
         onSubmit={formOfReackHook.handleSubmit(handleCreateQuestion)}
       >
         {/* Titile */}
@@ -41,7 +87,7 @@ const QuestionForm = () => {
           name="title"
           control={formOfReackHook.control}
           render={({ field }) => (
-            <FormItem className="flex w-full flex-col gap-5">
+            <FormItem className="flex w-full flex-col gap-5 mb-10">
               <FormLabel className="paragraph-semibold text-dark400_light800">
                 Question Title <span className="text-primary-500">*</span>
               </FormLabel>
@@ -57,6 +103,7 @@ const QuestionForm = () => {
                 Be specific and imagine you’re asking a question to another
                 person
               </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -65,7 +112,7 @@ const QuestionForm = () => {
           name="content"
           control={formOfReackHook.control}
           render={({ field }) => (
-            <FormItem className="flex w-full flex-col gap-5">
+            <FormItem className="flex w-full flex-col gap-5 mb-10">
               <FormLabel className="paragraph-semibold text-dark400_light800">
                 Detailed explanation of your problem
                 <span className="text-primary-500">*</span>
@@ -81,6 +128,7 @@ const QuestionForm = () => {
                 Introduce the problem and expand on what you put in the title.
                 Minimum 20 characters.
               </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -90,7 +138,7 @@ const QuestionForm = () => {
           name="tags"
           control={formOfReackHook.control}
           render={({ field }) => (
-            <FormItem className="flex w-full flex-col gap-5">
+            <FormItem className="flex w-full flex-col gap-5 mb-10">
               <FormLabel className="paragraph-semibold text-dark400_light800">
                 Tags
                 <span className="text-primary-500">*</span>
@@ -101,16 +149,32 @@ const QuestionForm = () => {
                     className="paragraph-regular background-light700_dark300
                      light-border-2 text-dark300_light700 no-focus min-h-[56px]
                       border"
-                    {...field}
+                    // {...field}
+                    onKeyDown={(e) => handleInputKeyDown(e, field)}
                     placeholder="Add tags.."
                   />
-                  TAGS TODO
+                  {field.value.length > 0 && (
+                    <div className="flex-start mt-2.5 flex-wrap gap-2.5">
+                      {field?.value?.map((tag: string) => (
+                        <TagCard
+                          key={tag}
+                          _id={tag}
+                          name={tag}
+                          compact
+                          remove
+                          isButton
+                          handleRemove={() => handleTagRemove(tag, field)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </FormControl>
               <FormDescription>
                 Add up to 3 tags to describe what your question is about. Start
                 typing to see suggestions.
               </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
