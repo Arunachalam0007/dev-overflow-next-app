@@ -13,7 +13,7 @@ export interface IUser {
 }
 
 // 2. Create a Schema corresponding to the document interface.
-const UserSchema = new Schema(
+const UserSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     username: { type: String, required: true },
@@ -28,6 +28,6 @@ const UserSchema = new Schema(
 );
 
 // 3. Create a Model. or use the existing model
-const User = models?.user || model<IUser>("User", UserSchema);
+const User = models?.User || model<IUser>("User", UserSchema);
 
 export default User;
