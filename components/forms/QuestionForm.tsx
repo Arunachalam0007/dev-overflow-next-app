@@ -1,7 +1,9 @@
 "use client";
 import { AskQuestionSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { MDXEditorMethods } from "@mdxeditor/editor";
+import dynamic from "next/dynamic";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -14,7 +16,13 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
+const Editor = dynamic(() => import("@/components/editor"), {
+  ssr: false,
+});
+
 const QuestionForm = () => {
+  const editorRef = useRef<MDXEditorMethods>(null);
+
   const formOfReackHook = useForm({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: { title: "", content: "", tags: [] },
@@ -54,7 +62,7 @@ const QuestionForm = () => {
         />
         {/* Editor Content */}
         <FormField
-          name="title"
+          name="content"
           control={formOfReackHook.control}
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-5">
@@ -62,7 +70,13 @@ const QuestionForm = () => {
                 Detailed explanation of your problem
                 <span className="text-primary-500">*</span>
               </FormLabel>
-              <FormControl>Editor Will come</FormControl>
+              <FormControl>
+                <Editor
+                  value={field.value}
+                  editorRef={editorRef}
+                  fieldChange={field.onChange}
+                />
+              </FormControl>
               <FormDescription>
                 Introduce the problem and expand on what you put in the title.
                 Minimum 20 characters.
@@ -73,7 +87,7 @@ const QuestionForm = () => {
 
         {/* Tags */}
         <FormField
-          name="title"
+          name="tags"
           control={formOfReackHook.control}
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-5">
