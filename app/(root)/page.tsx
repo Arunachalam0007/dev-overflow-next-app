@@ -6,6 +6,9 @@ import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
+import { ValidationError } from "@/lib/http-errors";
+import handleError from "@/lib/handlers/error";
+import logger from "@/lib/logger";
 
 const questions = [
   {
@@ -47,6 +50,18 @@ const questions = [
     createdAt: new Date("2021-09-01"),
   },
 ];
+
+const test = async () => {
+  try {
+    throw new ValidationError({
+      title: ["Required"],
+      tags: ['"JavaScript" is not a valid tag.'],
+    });
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
 interface SearchParamsURLProps {
   searchParams: Promise<{ [key: string]: string }>;
 }
@@ -54,7 +69,8 @@ interface SearchParamsURLProps {
 // searchParams which is coming from by default URL Params Value
 
 async function Home({ searchParams }: SearchParamsURLProps) {
-  console.log("searchParamsURL: ", searchParams);
+  await test();
+  logger.info("searchParamsURL: ", searchParams);
   const { query = "", filter = "" } = await searchParams;
 
   // const filterdQuestions = questions.filter((question) =>
