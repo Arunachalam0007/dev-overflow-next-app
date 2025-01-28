@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-
 import { RequestError, ValidationError } from "../http-errors";
 import logger from "../logger";
-
 export type ResponseType = "api" | "server";
 
 const formatResponse = (
@@ -19,7 +17,6 @@ const formatResponse = (
       details: errors,
     },
   };
-
   return responseType === "api"
     ? NextResponse.json(responseContent, { status })
     : { status, ...responseContent };
@@ -31,7 +28,6 @@ const handleError = (error: unknown, responseType: ResponseType = "server") => {
       { err: error },
       `${responseType.toUpperCase()} Error: ${error.message}`
     );
-
     return formatResponse(
       responseType,
       error.statusCode,
@@ -39,7 +35,6 @@ const handleError = (error: unknown, responseType: ResponseType = "server") => {
       error.errors
     );
   }
-
   if (error instanceof ZodError) {
     const validationError = new ValidationError(
       error.flatten().fieldErrors as Record<string, string[]>
