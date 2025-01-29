@@ -9,6 +9,7 @@ import ROUTES from "@/constants/routes";
 import { ValidationError } from "@/lib/http-errors";
 import handleError from "@/lib/handlers/error";
 import logger from "@/lib/logger";
+import { api } from "@/lib/api";
 
 const questions = [
   {
@@ -53,10 +54,7 @@ const questions = [
 
 const test = async () => {
   try {
-    throw new ValidationError({
-      title: ["Required"],
-      tags: ['"JavaScript" is not a valid tag.'],
-    });
+    return await api.users.getAll();
   } catch (error) {
     return handleError(error);
   }
@@ -69,7 +67,9 @@ interface SearchParamsURLProps {
 // searchParams which is coming from by default URL Params Value
 
 async function Home({ searchParams }: SearchParamsURLProps) {
-  await test();
+  const user = await test();
+  console.log("usersss: ", user);
+
   logger.info("searchParamsURL: ", searchParams);
   const { query = "", filter = "" } = await searchParams;
 
